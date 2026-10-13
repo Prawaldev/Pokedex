@@ -2,9 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pokedex</title>
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="A minimal Pokédex — search Pokémon from the PokéAPI by name or number and view official artwork, types, abilities and base stats."
+    />
+    <title>Pokédex</title>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="/fonts/BrassMono/BrassMonoCode-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/BrassMono/BrassMonoCode-Bold.ttf" as="font" type="font/ttf" crossorigin />
+
+    <script>
+      // set the saved theme before first paint so the page never flashes
+      (function () {
+        try {
+          var saved = localStorage.getItem('pokedex-theme')
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved
+          }
+        } catch (error) {
+          /* private mode — keep the dark default */
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
