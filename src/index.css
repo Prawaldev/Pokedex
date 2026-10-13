@@ -234,6 +234,7 @@ select {
   color: var(--ink);
   border: 0;
   border-radius: var(--radius);
+  text-decoration: none;
   cursor: pointer;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
@@ -286,6 +287,7 @@ select {
 
 .text-link {
   color: var(--ink-soft);
+  text-decoration: none;
   transition: color 0.2s ease;
 }
 
@@ -376,6 +378,7 @@ select {
   width: 100%;
   padding: 1rem;
   text-align: left;
+  text-decoration: none;
   background-color: var(--surface-raised);
   color: var(--ink);
   border: 0;
@@ -489,27 +492,8 @@ select {
 }
 
 /* ==========================================================================
-   Detail dialog
+   Pokémon page
    ========================================================================== */
-
-.detail-dialog {
-  width: min(92vw, 880px);
-  max-height: 90svh;
-  padding: 0;
-  color: var(--ink);
-  background-color: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: auto;
-}
-
-.detail-dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.72);
-}
-
-.detail-body {
-  padding: clamp(1.25rem, 3vw, 2rem);
-}
 
 .detail-bar {
   display: flex;
@@ -630,6 +614,24 @@ select {
 .stat-value {
   text-align: right;
   color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   Not found
+   ========================================================================== */
+
+.not-found-title {
+  margin-top: 1.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.not-found-text {
+  margin-top: 0.75rem;
+  max-width: 40rem;
+}
+
+.not-found-action {
+  margin-top: 1.5rem;
 }
 
 /* ==========================================================================

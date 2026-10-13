@@ -3,14 +3,13 @@ import { PokemonCard } from './PokemonCard'
 
 interface PokemonGridProps {
   resources: NamedResource[]
-  onSelect: (resource: NamedResource) => void
 }
 
-export function PokemonGrid({ resources, onSelect }: PokemonGridProps) {
+export function PokemonGrid({ resources }: PokemonGridProps) {
   return (
     <div className="pokemon-grid">
       {resources.map((resource) => (
-        <PokemonCard key={resource.name} resource={resource} onSelect={onSelect} />
+        <PokemonCard key={resource.name} resource={resource} />
       ))}
     </div>
   )

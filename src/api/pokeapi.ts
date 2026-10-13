@@ -2,6 +2,17 @@ import type { NamedResource, Pokemon, PokemonListResponse } from '../types/pokem
 
 const API_BASE = 'https://pokeapi.co/api/v2'
 
+/** Error carrying the HTTP status so the UI can tell a 404 from a real failure. */
+export class PokeApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'PokeApiError'
+    this.status = status
+  }
+}
+
 /**
  * Single fetch wrapper: turns any failure into a short, human message the UI
  * can show next to a retry button.
@@ -12,7 +23,10 @@ async function request<T>(url: string, signal?: AbortSignal): Promise<T> {
   })
 
   if (!response.ok) {
-    throw new Error(`The Pokédex request failed (HTTP ${response.status}).`)
+    throw new PokeApiError(
+      `The Pokédex request failed (HTTP ${response.status}).`,
+      response.status,
+    )
   }
 
   return (await response.json()) as T
@@ -24,31 +38,39 @@ export function idFromResourceUrl(url: string): number {
   return match ? Number(match[1]) : 0
 }
 
+/** PokéAPI accepts either a name or an id in the same path segment. */
+function normalizeIdentifier(identifier: string | number): string {
+  return String(identifier).trim().toLowerCase()
+}
+
 export function fetchPokemonIndex(): Promise<NamedResource[]> {
   return request<PokemonListResponse>(`${API_BASE}/pokemon?limit=100000&offset=0`).then(
     (data) => data.results,
   )
 }
 
-export function fetchPokemon(id: number, signal?: AbortSignal): Promise<Pokemon> {
-  return request<Pokemon>(`${API_BASE}/pokemon/${id}`, signal)
+export function fetchPokemon(
+  identifier: string | number,
+  signal?: AbortSignal,
+): Promise<Pokemon> {
+  return request<Pokemon>(`${API_BASE}/pokemon/${normalizeIdentifier(identifier)}`, signal)
 }
 
-/* A page of cards can ask for the same Pokémon more than once (a card and the
-   detail dialog, or a stray re-render). Caching the in-flight promise dedupes
-   those requests and keeps them from firing twice. Failures are evicted so a
-   retry actually hits the network again. */
-const detailCache = new Map<number, Promise<Pokemon>>()
+/* The same Pokémon can be requested several times (route change, a card, a
+   retry). Caching the in-flight promise dedupes those requests. Failures are
+   evicted so a retry actually hits the network again. */
+const detailCache = new Map<string, Promise<Pokemon>>()
 
-export function fetchPokemonCached(id: number): Promise<Pokemon> {
-  const cached = detailCache.get(id)
+export function fetchPokemonCached(identifier: string | number): Promise<Pokemon> {
+  const key = normalizeIdentifier(identifier)
+  const cached = detailCache.get(key)
   if (cached) return cached
 
-  const promise = fetchPokemon(id).catch((error: unknown) => {
-    detailCache.delete(id)
+  const promise = fetchPokemon(key).catch((error: unknown) => {
+    detailCache.delete(key)
     throw error
   })
 
-  detailCache.set(id, promise)
+  detailCache.set(key, promise)
   return promise
 }

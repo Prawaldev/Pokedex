@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { idFromResourceUrl } from '../api/pokeapi'
 import { usePokemonDetail } from '../hooks/usePokemonDetail'
 import { artworkUrl, formatName, formatNumber } from '../lib/format'
@@ -6,10 +7,9 @@ import { TypeBadge } from './TypeBadge'
 
 interface PokemonCardProps {
   resource: NamedResource
-  onSelect: (resource: NamedResource) => void
 }
 
-export function PokemonCard({ resource, onSelect }: PokemonCardProps) {
+export function PokemonCard({ resource }: PokemonCardProps) {
   const id = idFromResourceUrl(resource.url)
   const { state } = usePokemonDetail(id)
   const name = formatName(resource.name)
@@ -18,10 +18,9 @@ export function PokemonCard({ resource, onSelect }: PokemonCardProps) {
   const image = pokemon ? artworkUrl(pokemon) : null
 
   return (
-    <button
-      type="button"
+    <Link
+      to={`/pokemon/${resource.name}`}
       className="pokemon-card"
-      onClick={() => onSelect(resource)}
       aria-label={`View details for ${name}, ${formatNumber(id)}`}
     >
       <span className="pokemon-number">{formatNumber(id)}</span>
@@ -57,6 +56,6 @@ export function PokemonCard({ resource, onSelect }: PokemonCardProps) {
           </span>
         )}
       </span>
-    </button>
+    </Link>
   )
 }
