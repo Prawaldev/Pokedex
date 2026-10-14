@@ -39,13 +39,8 @@
   --ink-soft: #d9d5c3;
   --ink-dim: #cbc7ad;
   --ink-faint: #afac92;
-  --amber: #e5484d;
-  --amber-dim: #a93a3e;
+  --accent: #e5484d;
   --steel: #a29f86;
-  --signal: #e5484d;
-  --signal-dim: #b56a6d;
-  --selection: #e5484d;
-  --selection-ink: #000000;
 }
 
 [data-theme='light'] {
@@ -61,12 +56,31 @@
   --ink-soft: #3f3e31;
   --ink-dim: #494733;
   --ink-faint: #6e6b55;
-  --amber: #b42318;
-  --amber-dim: #f0a9a4;
   --steel: #7a7861;
-  --signal: #b42318;
-  --signal-dim: #8a3a35;
-  --selection: #b42318;
+}
+
+/* ==========================================================================
+   Accent tokens — every highlight reads from --accent, which the colour picker
+   repaints at runtime. Re-declared on .accent-scope so a Pokémon page can
+   locally override the accent with its own blended type colour.
+   ========================================================================== */
+
+:root,
+.accent-scope {
+  --amber: var(--accent);
+  --amber-dim: color-mix(in srgb, var(--accent) 72%, #000000);
+  --signal: var(--accent);
+  --signal-dim: color-mix(in srgb, var(--accent) 58%, #808080);
+  --selection: var(--accent);
+  --selection-ink: #000000;
+}
+
+[data-theme='light'],
+[data-theme='light'] .accent-scope {
+  --amber: color-mix(in srgb, var(--accent) 80%, #000000);
+  --amber-dim: color-mix(in srgb, var(--accent) 45%, #ffffff);
+  --signal: color-mix(in srgb, var(--accent) 80%, #000000);
+  --signal-dim: color-mix(in srgb, var(--accent) 72%, #000000);
   --selection-ink: #fdfbf0;
 }
 
@@ -318,10 +332,16 @@ select {
 .header-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 1rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--line);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .header-actions {
@@ -406,6 +426,104 @@ select {
   height: 0.7rem;
   flex: none;
   border-radius: 999px;
+}
+
+.color-menu {
+  display: block;
+  width: 15rem;
+  padding: 0.85rem;
+}
+
+.color-menu-title {
+  font-size: 0.68rem;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.color-swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.55rem;
+  margin: 0.75rem 0;
+}
+
+.color-swatch {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 1px solid var(--line-bright);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.08);
+}
+
+.color-swatch.is-selected {
+  box-shadow: 0 0 0 2px var(--surface-raised), 0 0 0 4px var(--ink);
+}
+
+.color-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.color-input {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--line-bright);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.color-input::-webkit-color-swatch {
+  border: 0;
+  border-radius: 4px;
+}
+
+.color-hex {
+  padding: 0.5rem 0.6rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.color-reset {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.color-reset:hover:not(:disabled) {
+  color: var(--ink);
+  background-color: var(--surface-sunken);
+}
+
+.color-reset:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
 @media (max-width: 460px) {
@@ -530,6 +648,8 @@ select {
 }
 
 .search-modal-results {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 0.4rem;
 }
@@ -548,10 +668,10 @@ select {
 
 .search-result {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.85rem;
   width: 100%;
-  padding: 0.65rem 0.85rem;
+  padding: 0.5rem 0.85rem;
   text-align: left;
   color: var(--ink);
   background: transparent;
@@ -568,16 +688,38 @@ select {
   color: var(--amber);
 }
 
-.search-result-number {
+.search-result-art {
   flex: none;
-  min-width: 3.5rem;
-  font-size: 0.78rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.search-result-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.search-result-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.search-result-number {
+  font-size: 0.72rem;
   letter-spacing: 0.08em;
   color: var(--ink-dim);
 }
 
 .search-result-name {
   font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: color 0.15s ease;
 }
 

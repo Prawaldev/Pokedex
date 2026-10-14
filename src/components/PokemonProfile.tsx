@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import {
   STAT_LABELS,
   artworkUrl,
@@ -5,6 +6,7 @@ import {
   formatName,
   formatNumber,
   formatWeight,
+  typeColor,
 } from '../lib/format'
 import type { Pokemon } from '../types/pokemon'
 import { StatBar } from './StatBar'
@@ -14,8 +16,13 @@ export function PokemonProfile({ pokemon }: { pokemon: Pokemon }) {
   const image = artworkUrl(pokemon)
   const name = formatName(pokemon.name)
 
+  /* The detail page borrows its accent from the Pokémon's primary type — the
+     lowest slot — rather than the reader's chosen theme colour. */
+  const primary = [...pokemon.types].sort((a, b) => a.slot - b.slot)[0]
+  const accent = primary ? typeColor(primary.type.name) : undefined
+
   return (
-    <div className="detail-content">
+    <div className="detail-content accent-scope" style={{ '--accent': accent } as CSSProperties}>
       <div className="detail-art">
         {image ? (
           <img

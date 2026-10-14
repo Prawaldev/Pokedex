@@ -27,6 +27,10 @@
           if (saved === 'light' || saved === 'dark') {
             document.documentElement.dataset.theme = saved
           }
+          var accent = localStorage.getItem('pokedex-accent')
+          if (accent && /^#[0-9a-f]{6}$/i.test(accent)) {
+            document.documentElement.style.setProperty('--accent', accent)
+          }
         } catch (error) {
           /* private mode — keep the dark default */
         }

@@ -24,6 +24,15 @@ export function formatWeight(hectograms: number): string {
   return `${(hectograms / 10).toFixed(1)} kg`
 }
 
+/* PokéAPI's official artwork lives on its sprite CDN, so a thumbnail can be
+   built from the id alone — no extra detail request for every search result. */
+const SPRITE_ART_BASE =
+  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
+
+export function artworkUrlById(id: number): string {
+  return `${SPRITE_ART_BASE}/${id}.png`
+}
+
 export function artworkUrl(pokemon: Pokemon): string | null {
   return (
     pokemon.sprites.other?.['official-artwork']?.front_default ??
@@ -68,6 +77,25 @@ export function typeColor(name: string): string {
 
 /** The eighteen types, in PokéAPI's canonical order. */
 export const TYPE_NAMES = Object.keys(TYPE_COLORS)
+
+/* Accent presets for the theme colour picker. Red mirrors the default. */
+export const ACCENT_PRESETS = [
+  { name: 'Red', value: '#e5484d' },
+  { name: 'Orange', value: '#f76b15' },
+  { name: 'Yellow', value: '#f5c518' },
+  { name: 'Green', value: '#30a46c' },
+  { name: 'Blue', value: '#3b82f6' },
+  { name: 'Purple', value: '#8b5cf6' },
+  { name: 'Pink', value: '#ec4899' },
+] as const
+
+export const DEFAULT_ACCENT = ACCENT_PRESETS[0].value
+
+export const ACCENT_PATTERN = /^#[0-9a-f]{6}$/i
+
+export function isAccent(value: string): boolean {
+  return ACCENT_PATTERN.test(value)
+}
 
 /** Picks dark or light text so a coloured type chip stays readable. */
 export function contrastInk(hex: string): string {

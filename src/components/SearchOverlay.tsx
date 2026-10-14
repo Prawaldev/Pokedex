@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { idFromResourceUrl } from '../api/pokeapi'
-import { filterResources, formatName, formatNumber } from '../lib/format'
+import { artworkUrlById, filterResources, formatName, formatNumber } from '../lib/format'
 import type { NamedResource } from '../types/pokemon'
 import { SearchIcon } from './Icons'
 
@@ -115,8 +115,21 @@ export function SearchOverlay({ onClose, resources }: SearchOverlayProps) {
                       onMouseMove={() => setActive(index)}
                       onClick={() => go(resource.name)}
                     >
-                      <span className="search-result-number">{formatNumber(id)}</span>
-                      <span className="search-result-name">{formatName(resource.name)}</span>
+                      <span className="search-result-art">
+                        <img
+                          src={artworkUrlById(id)}
+                          alt=""
+                          width={96}
+                          height={96}
+                          loading="lazy"
+                          decoding="async"
+                          className="search-result-image"
+                        />
+                      </span>
+                      <span className="search-result-text">
+                        <span className="search-result-number">{formatNumber(id)}</span>
+                        <span className="search-result-name">{formatName(resource.name)}</span>
+                      </span>
                     </button>
                   </li>
                 )
