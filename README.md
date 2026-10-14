@@ -1,32 +1,29 @@
-# Pokédex
+<div align="center">
 
-A little place to explore Pokémon.
+<img src="public/pokedex-favicon/web-app-manifest-512x512.png" alt="pokedex icon" width="200" />
 
-Browse Pokémon, search by name or Pokédex number, and open individual pages to learn more about each one.
+# Pokedex
 
-**Live site:** https://prawaldev.github.io/Pokedex/
+### A little place to explore Pokémon.
 
-## Features
+<br/>
 
-- Browse Pokémon and their official artwork
-- Search by name or Pokédex number
-- View individual Pokémon pages
-- Explore types, abilities, stats, height, and weight
-- Responsive layout for desktop and mobile
 
-## Running locally
 
-```bash
-git clone https://github.com/Prawaldev/Pokedex.git
-cd Pokedex
-npm install
-npm run dev
-```
-
-## Credits
-
-Pokémon data and artwork from [PokéAPI](https://pokeapi.co/).
+</div>
 
 ---
 
-Made while learning and building things.
+<div align="center">
+
+<h1><a id="screenshots"></a>Screenshots</h1>
+
+<img src="public/screenshots/1.png" alt="Home screen Dark" width="30%" />
+<img src="public/screenshots/2.png" alt="Home screen light" width="30%" />
+<img src="public/screenshots/3.png" alt="search bar" width="30%" />
+<img src="public/screenshots/4.png" alt="infogrid" width="30%" />
+<img src="public/screenshots/5.png" alt="infogrid2" width="30%" />
+<img src="public/screenshots/6.png" alt="types" width="30%" />
+<img src="public/screenshots/7.png" alt="color" width="30%" />
+
+</div>
