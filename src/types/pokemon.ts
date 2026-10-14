@@ -15,6 +15,17 @@ export interface PokemonType {
   type: NamedResource
 }
 
+export interface TypePokemonEntry {
+  slot: number
+  pokemon: NamedResource
+}
+
+export interface PokemonTypeListResponse {
+  id: number
+  name: string
+  pokemon: TypePokemonEntry[]
+}
+
 export interface PokemonAbility {
   ability: NamedResource
   is_hidden: boolean

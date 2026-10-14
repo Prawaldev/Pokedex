@@ -1,4 +1,9 @@
-import type { NamedResource, Pokemon, PokemonListResponse } from '../types/pokemon'
+import type {
+  NamedResource,
+  Pokemon,
+  PokemonListResponse,
+  PokemonTypeListResponse,
+} from '../types/pokemon'
 
 const API_BASE = 'https://pokeapi.co/api/v2'
 
@@ -54,6 +59,32 @@ export function fetchPokemon(
   signal?: AbortSignal,
 ): Promise<Pokemon> {
   return request<Pokemon>(`${API_BASE}/pokemon/${normalizeIdentifier(identifier)}`, signal)
+}
+
+/** Every Pokémon that carries one of the eighteen types, e.g. "fire". */
+export function fetchPokemonType(type: string, signal?: AbortSignal): Promise<NamedResource[]> {
+  return request<PokemonTypeListResponse>(
+    `${API_BASE}/type/${normalizeIdentifier(type)}`,
+    signal,
+  ).then((data) => data.pokemon.map((entry) => entry.pokemon))
+}
+
+/* A type's roster is stable, so the fetched list is kept around. The promise
+   is cached rather than the result so concurrent calls share one request. */
+const typeCache = new Map<string, Promise<NamedResource[]>>()
+
+export function fetchPokemonTypeCached(type: string): Promise<NamedResource[]> {
+  const key = normalizeIdentifier(type)
+  const cached = typeCache.get(key)
+  if (cached) return cached
+
+  const promise = fetchPokemonType(key).catch((error: unknown) => {
+    typeCache.delete(key)
+    throw error
+  })
+
+  typeCache.set(key, promise)
+  return promise
 }
 
 /* The same Pokémon can be requested several times (route change, a card, a

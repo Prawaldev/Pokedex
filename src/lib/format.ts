@@ -66,6 +66,9 @@ export function typeColor(name: string): string {
   return TYPE_COLORS[name.trim().toLowerCase()] ?? '#6b7280'
 }
 
+/** The eighteen types, in PokéAPI's canonical order. */
+export const TYPE_NAMES = Object.keys(TYPE_COLORS)
+
 /** Picks dark or light text so a coloured type chip stays readable. */
 export function contrastInk(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16)

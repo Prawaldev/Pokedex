@@ -1,14 +1,40 @@
+import { SearchIcon } from './Icons'
+import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
+import { TypeFilter } from './TypeFilter'
 
-export function Header() {
+interface HeaderProps {
+  selectedType: string | null
+  onTypeChange: (type: string | null) => void
+  onSearchOpen: () => void
+}
+
+export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps) {
   return (
     <header className="panel">
       <div className="header-bar">
-        <p className="label">National Pokédex</p>
-        <ThemeToggle />
+        <div className="header-actions">
+          <TypeFilter selectedType={selectedType} onChange={onTypeChange} />
+
+          <button
+            type="button"
+            className="header-action"
+            onClick={onSearchOpen}
+            aria-label="Search Pokémon"
+            title="Search Pokémon"
+          >
+            <SearchIcon />
+            <span>Search</span>
+          </button>
+
+          <ThemeToggle />
+        </div>
       </div>
 
-      <h1 className="display header-title">Pokédex</h1>
+      <div className="header-lockup">
+        <Logo className="header-logo" />
+        <h1 className="display header-title">Pokédex</h1>
+      </div>
 
       <p className="prose-dim header-subtitle">
         Search every Pokémon by name or Pokédex number, then open a card for official
