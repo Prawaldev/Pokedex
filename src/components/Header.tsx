@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom'
 import { ColorPicker } from './ColorPicker'
-import { GitHubIcon, SearchIcon } from './Icons'
+import { ChatIcon, GitHubIcon, SearchIcon } from './Icons'
 import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 import { TypeFilter } from './TypeFilter'
@@ -41,6 +42,16 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
             <span>Search</span>
           </button>
 
+          <Link
+            to="/finder"
+            className="header-action"
+            aria-label="Open the Pokémon Finder"
+            title="Describe a Pokémon and find matches"
+          >
+            <ChatIcon />
+            <span>Finder</span>
+          </Link>
+
           <ColorPicker />
 
           <ThemeToggle />
@@ -53,8 +64,8 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
       </div>
 
       <p className="prose-dim header-subtitle">
-        Search every Pokémon by name or Pokédex number, then open a card for official
-        artwork, types, abilities and base stats.
+        Search every Pokémon by name or Pokédex number, or describe one from memory in the
+        Finder. Open a card for official artwork, types, abilities and base stats.
       </p>
     </header>
   )

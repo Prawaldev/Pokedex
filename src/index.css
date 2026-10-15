@@ -1031,6 +1031,260 @@ select {
 }
 
 /* ==========================================================================
+   Pokémon Finder
+   ========================================================================== */
+
+.finder {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.finder-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.finder-head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.finder-head-text .label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.finder-title {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+}
+
+.finder-subtitle {
+  max-width: 44rem;
+  font-size: 0.92rem;
+}
+
+.finder-reset {
+  flex: none;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.78rem;
+}
+
+.finder-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-height: min(60vh, 42rem);
+  overflow-y: auto;
+  padding: clamp(0.9rem, 2vw, 1.25rem);
+  background-color: var(--void);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  scroll-behavior: smooth;
+}
+
+.finder-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 100%;
+}
+
+.finder-msg-user {
+  align-items: flex-end;
+}
+
+.finder-bubble {
+  max-width: min(100%, 46rem);
+  padding: 0.75rem 1rem;
+  line-height: 1.6;
+  border-radius: var(--radius);
+}
+
+.finder-msg-user .finder-bubble {
+  background-color: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.finder-msg-assistant .finder-bubble {
+  background-color: var(--surface-raised);
+  color: var(--ink-soft);
+}
+
+.finder-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.finder-chips-label {
+  margin-right: 0.2rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.finder-chip {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.72rem;
+  border-radius: 999px;
+  background-color: var(--surface-sunken);
+  color: var(--signal);
+}
+
+.finder-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.finder-result {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem;
+  color: var(--ink);
+  text-decoration: none;
+  background-color: var(--surface-raised);
+  border-radius: var(--radius);
+  transition: background-color 0.2s ease;
+}
+
+.finder-result:hover {
+  background-color: var(--surface-sunken);
+}
+
+.finder-result-art {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.finder-result-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.finder-result-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.finder-result-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.finder-result-name {
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.finder-result:hover .finder-result-name {
+  color: var(--amber);
+}
+
+.finder-result-types {
+  margin-top: 0;
+}
+
+.finder-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.finder-reason {
+  padding: 0.2rem 0.45rem;
+  font-size: 0.68rem;
+  border-radius: 6px;
+  color: var(--ink-dim);
+  background-color: var(--void);
+}
+
+.finder-results-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.finder-count {
+  font-size: 0.78rem;
+}
+
+.finder-more {
+  padding: 0.55rem 0.9rem;
+  font-size: 0.78rem;
+}
+
+.finder-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.finder-suggestion {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  background-color: var(--surface-raised);
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.finder-suggestion:hover {
+  color: var(--amber);
+  background-color: var(--surface-sunken);
+}
+
+.finder-composer {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.finder-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.finder-send {
+  flex: none;
+}
+
+.finder-note {
+  font-size: 0.74rem;
+}
+
+@media (max-width: 560px) {
+  .finder-results {
+    grid-template-columns: 1fr;
+  }
+
+  .finder-head {
+    flex-direction: column;
+  }
+}
+
+/* ==========================================================================
    Motion
    ========================================================================== */
 

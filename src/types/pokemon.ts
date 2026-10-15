@@ -60,3 +60,37 @@ export interface Pokemon {
   stats: PokemonStat[]
   sprites: PokemonSprites
 }
+
+export interface FinderStats {
+  hp: number
+  attack: number
+  defense: number
+  specialAttack: number
+  specialDefense: number
+  speed: number
+}
+
+/**
+ * One row of the local finder dataset generated from PokéAPI by
+ * `npm run data`. It flattens everything the finder can match on so a written
+ * description never has to hit the network at runtime.
+ */
+export interface FinderPokemon {
+  id: number
+  name: string
+  height: number
+  weight: number
+  types: string[]
+  abilities: string[]
+  hiddenAbility: string | null
+  color: string | null
+  shape: string | null
+  habitat: string | null
+  genus: string
+  flavor: string
+  generation: number | null
+  isLegendary: boolean
+  isMythical: boolean
+  isBaby: boolean
+  stats: FinderStats
+}
