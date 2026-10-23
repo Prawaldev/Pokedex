@@ -6,7 +6,7 @@
 
 ### A little place to explore Pokémon.
 
-[**Open Website**](https://prawal.is-a.dev) · [**Download Android APK**](https://github.com/Prawaldev/Pokedex/releases/latest) · [**View Releases**](https://github.com/Prawaldev/Pokedex/releases)
+[**Open Website**](https://prawaldev.github.io/Pokedex) · [**Download Android APK**](https://github.com/Prawaldev/Pokedex/releases/latest) · [**View Releases**](https://github.com/Prawaldev/Pokedex/releases)
 
 </div>
 
@@ -24,7 +24,7 @@ Available as a website and an Android app.
 
 | Platform | Link |
 |:---:|:---|
-| **Web** | [Launch Pokédex](https://prawal.is-a.dev) |
+| **Web** | [Launch Pokédex](https://prawaldev.github.io/Pokedex) |
 | **Android** | [Download the latest APK](https://github.com/Prawaldev/Pokedex/releases/latest) |
 
 </div>
