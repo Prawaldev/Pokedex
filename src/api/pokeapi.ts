@@ -2,6 +2,7 @@ import type {
   NamedResource,
   Pokemon,
   PokemonListResponse,
+  PokemonSpecies,
   PokemonTypeListResponse,
 } from '../types/pokemon'
 
@@ -61,6 +62,16 @@ export function fetchPokemon(
   return request<Pokemon>(`${API_BASE}/pokemon/${normalizeIdentifier(identifier)}`, signal)
 }
 
+export function fetchPokemonSpecies(
+  identifier: string | number,
+  signal?: AbortSignal,
+): Promise<PokemonSpecies> {
+  return request<PokemonSpecies>(
+    `${API_BASE}/pokemon-species/${normalizeIdentifier(identifier)}`,
+    signal,
+  )
+}
+
 /** Every Pokémon that carries one of the eighteen types, e.g. "fire". */
 export function fetchPokemonType(type: string, signal?: AbortSignal): Promise<NamedResource[]> {
   return request<PokemonTypeListResponse>(
@@ -103,5 +114,25 @@ export function fetchPokemonCached(identifier: string | number): Promise<Pokemon
   })
 
   detailCache.set(key, promise)
+  return promise
+}
+
+/* Species records change rarely and are shared by every form of a Pokémon, so
+   the same in-flight promise cache is used here too. */
+const speciesCache = new Map<string, Promise<PokemonSpecies>>()
+
+export function fetchPokemonSpeciesCached(
+  identifier: string | number,
+): Promise<PokemonSpecies> {
+  const key = normalizeIdentifier(identifier)
+  const cached = speciesCache.get(key)
+  if (cached) return cached
+
+  const promise = fetchPokemonSpecies(key).catch((error: unknown) => {
+    speciesCache.delete(key)
+    throw error
+  })
+
+  speciesCache.set(key, promise)
   return promise
 }

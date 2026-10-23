@@ -55,10 +55,23 @@ export interface Pokemon {
   name: string
   height: number
   weight: number
+  species: NamedResource
   types: PokemonType[]
   abilities: PokemonAbility[]
   stats: PokemonStat[]
   sprites: PokemonSprites
+}
+
+export interface PokemonSpeciesFlavorTextEntry {
+  flavor_text: string
+  language: NamedResource
+  version: NamedResource
+}
+
+export interface PokemonSpecies {
+  id: number
+  name: string
+  flavor_text_entries: PokemonSpeciesFlavorTextEntry[]
 }
 
 export interface FinderStats {

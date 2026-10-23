@@ -1,4 +1,8 @@
-import type { NamedResource, Pokemon } from '../types/pokemon'
+import type {
+  NamedResource,
+  Pokemon,
+  PokemonSpeciesFlavorTextEntry,
+} from '../types/pokemon'
 import { idFromResourceUrl } from '../api/pokeapi'
 
 /** "mr-mime" -> "Mr Mime" */
@@ -38,6 +42,40 @@ export function artworkUrl(pokemon: Pokemon): string | null {
     pokemon.sprites.other?.['official-artwork']?.front_default ??
     pokemon.sprites.front_default
   )
+}
+
+/* Old Japanese re-releases have high version ids but predate the modern
+   games, so they should never win the "most recent" comparison. */
+const LEGACY_JAPAN_VERSIONS = new Set(['red-japan', 'green-japan', 'blue-japan'])
+
+/** PokéAPI flavour text is full of line breaks, form feeds and odd glyphs. */
+export function cleanFlavorText(value: string): string {
+  return value
+    .replace(/\u00ad/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/**
+ * Picks the English flavour text from the most recent game version. PokéAPI's
+ * version ids follow release order, so the highest id is the newest entry;
+ * any English entry remains a valid fallback.
+ */
+export function selectEnglishFlavorText(
+  entries: PokemonSpeciesFlavorTextEntry[],
+): string | null {
+  const candidates = entries
+    .filter((entry) => entry.language.name === 'en')
+    .map((entry) => ({
+      text: cleanFlavorText(entry.flavor_text),
+      versionId: LEGACY_JAPAN_VERSIONS.has(entry.version.name)
+        ? 0
+        : idFromResourceUrl(entry.version.url),
+    }))
+    .filter((entry) => entry.text.length > 0)
+
+  candidates.sort((a, b) => b.versionId - a.versionId)
+  return candidates[0]?.text ?? null
 }
 
 export const STAT_LABELS: Record<string, string> = {

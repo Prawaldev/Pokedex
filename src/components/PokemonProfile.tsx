@@ -9,6 +9,7 @@ import {
   typeColor,
 } from '../lib/format'
 import type { Pokemon } from '../types/pokemon'
+import { PokemonDescription } from './PokemonDescription'
 import { StatBar } from './StatBar'
 import { TypeBadge } from './TypeBadge'
 
@@ -59,6 +60,8 @@ export function PokemonProfile({ pokemon }: { pokemon: Pokemon }) {
             <dd>{formatWeight(pokemon.weight)}</dd>
           </div>
         </dl>
+
+        <PokemonDescription identifier={pokemon.species.name} />
 
         <section className="detail-section">
           <h2 className="label">Abilities</h2>

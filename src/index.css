@@ -937,6 +937,21 @@ select {
   margin-top: 1.5rem;
 }
 
+.detail-description {
+  margin-top: 0.9rem;
+}
+
+.detail-description-status {
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+}
+
+.detail-description-action {
+  margin-top: 0.9rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.78rem;
+}
+
 .ability-list {
   display: flex;
   flex-wrap: wrap;
