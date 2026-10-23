@@ -33,7 +33,10 @@ export function formatWeight(hectograms: number): string {
 const SPRITE_ART_BASE =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
 
+const OFFLINE = import.meta.env.VITE_OFFLINE === 'true'
+
 export function artworkUrlById(id: number): string {
+  if (OFFLINE) return `${import.meta.env.BASE_URL}offline/artwork/${id}.webp`
   return `${SPRITE_ART_BASE}/${id}.png`
 }
 

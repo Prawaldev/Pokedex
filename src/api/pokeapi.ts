@@ -5,8 +5,16 @@ import type {
   PokemonSpecies,
   PokemonTypeListResponse,
 } from '../types/pokemon'
+import {
+  isOfflineMode,
+  offlinePokemon,
+  offlinePokemonIndex,
+  offlinePokemonType,
+  offlineSpecies,
+} from './offline'
 
 const API_BASE = 'https://pokeapi.co/api/v2'
+const OFFLINE = isOfflineMode()
 
 /** Error carrying the HTTP status so the UI can tell a 404 from a real failure. */
 export class PokeApiError extends Error {
@@ -50,22 +58,37 @@ function normalizeIdentifier(identifier: string | number): string {
 }
 
 export function fetchPokemonIndex(): Promise<NamedResource[]> {
+  if (OFFLINE) return offlinePokemonIndex()
   return request<PokemonListResponse>(`${API_BASE}/pokemon?limit=100000&offset=0`).then(
     (data) => data.results,
   )
 }
 
-export function fetchPokemon(
+export async function fetchPokemon(
   identifier: string | number,
   signal?: AbortSignal,
 ): Promise<Pokemon> {
+  if (OFFLINE) {
+    const pokemon = await offlinePokemon(identifier)
+    if (!pokemon) {
+      throw new PokeApiError(`The Pokédex request failed (HTTP 404).`, 404)
+    }
+    return pokemon
+  }
   return request<Pokemon>(`${API_BASE}/pokemon/${normalizeIdentifier(identifier)}`, signal)
 }
 
-export function fetchPokemonSpecies(
+export async function fetchPokemonSpecies(
   identifier: string | number,
   signal?: AbortSignal,
 ): Promise<PokemonSpecies> {
+  if (OFFLINE) {
+    const species = await offlineSpecies(identifier)
+    if (!species) {
+      throw new PokeApiError(`The Pokédex request failed (HTTP 404).`, 404)
+    }
+    return species
+  }
   return request<PokemonSpecies>(
     `${API_BASE}/pokemon-species/${normalizeIdentifier(identifier)}`,
     signal,
@@ -74,6 +97,7 @@ export function fetchPokemonSpecies(
 
 /** Every Pokémon that carries one of the eighteen types, e.g. "fire". */
 export function fetchPokemonType(type: string, signal?: AbortSignal): Promise<NamedResource[]> {
+  if (OFFLINE) return offlinePokemonType(type)
   return request<PokemonTypeListResponse>(
     `${API_BASE}/type/${normalizeIdentifier(type)}`,
     signal,

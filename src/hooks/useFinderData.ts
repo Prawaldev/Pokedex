@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { FinderEngine } from '../lib/finder'
+import { isOfflineMode, offlineFinderPokemon } from '../api/offline'
 import type { FinderPokemon } from '../types/pokemon'
 
 export type FinderDataState =
@@ -24,13 +25,17 @@ export function useFinderData() {
 
   useEffect(() => {
     let active = true
-    const url = `${import.meta.env.BASE_URL}data/pokemon.json`
 
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) throw new Error(`The finder data request failed (HTTP ${response.status}).`)
-        return response.json() as Promise<FinderPokemon[]>
-      })
+    const request: Promise<FinderPokemon[]> = isOfflineMode()
+      ? offlineFinderPokemon()
+      : fetch(`${import.meta.env.BASE_URL}data/pokemon.json`).then((response) => {
+          if (!response.ok) {
+            throw new Error(`The finder data request failed (HTTP ${response.status}).`)
+          }
+          return response.json() as Promise<FinderPokemon[]>
+        })
+
+    request
       .then((pokemon) => {
         if (active) setState({ status: 'ready', pokemon, engine: new FinderEngine(pokemon) })
       })
