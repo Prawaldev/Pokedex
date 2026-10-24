@@ -46,6 +46,7 @@ Available as a website and an Android app.
 <img src="public/screenshots/5.png" alt="Pokémon information details" width="30%" />
 <img src="public/screenshots/6.png" alt="Pokémon types" width="30%" />
 <img src="public/screenshots/7.png" alt="Pokémon colors" width="30%" />
+<img src="public/screenshots/8.png" alt="Pokémon colors" width="30%" />
 
 </div>
 
@@ -58,6 +59,7 @@ Available as a website and an Android app.
 <img src="public/feature/dark.png" alt="Feature — dark theme" width="30%" />
 <img src="public/feature/light.png" alt="Feature — light theme" width="30%" />
 <img src="public/feature/1.png" alt="Feature — search results" width="30%" />
+<img src="public/feature/quiz.png" alt="Feature — search results" width="30%" />
 
 </div>
 
