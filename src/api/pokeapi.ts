@@ -1,4 +1,5 @@
 import type {
+  EvolutionData,
   NamedResource,
   Pokemon,
   PokemonListResponse,
@@ -7,6 +8,7 @@ import type {
 } from '../types/pokemon'
 import {
   isOfflineMode,
+  offlineEvolutionChain,
   offlinePokemon,
   offlinePokemonIndex,
   offlinePokemonType,
@@ -160,3 +162,35 @@ export function fetchPokemonSpeciesCached(
   speciesCache.set(key, promise)
   return promise
 }
+
+const evolutionCache = new Map<string, Promise<EvolutionData>>()
+
+export function fetchEvolutionDataCached(): Promise<EvolutionData> {
+  const key = 'evolution'
+  const cached = evolutionCache.get(key)
+  if (cached) return cached
+
+  const promise = (async () => {
+    if (OFFLINE) {
+      const data = await offlineEvolutionChain()
+      if (!data) throw new Error('Evolution data not available')
+      return data
+    }
+    // Try to load from offline dataset structure if present in public data? Or use offline structure
+    // In online mode, better to construct from what we have - but easier to also check offline style
+    // Fallback: try loading evolution data similar to offline if bundled
+    const url = `${import.meta.env.BASE_URL}offline/pokedex.json`
+    const resp = await fetch(url)
+    if (!resp.ok) throw new Error('Evolution data not available')
+    const json = (await resp.json()) as { evolution?: EvolutionData }
+    if (!json.evolution) throw new Error('Evolution data not available')
+    return json.evolution
+  })().catch((error: unknown) => {
+    evolutionCache.delete(key)
+    throw error
+  })
+
+  evolutionCache.set(key, promise)
+  return promise
+}
+

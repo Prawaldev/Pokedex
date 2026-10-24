@@ -10,6 +10,7 @@ interface OfflinePokedex {
   pokemon: Pokemon[]
   species: PokemonSpecies[]
   finder: FinderPokemon[]
+  evolution?: import('../types/pokemon').EvolutionData
 }
 
 const API_BASE = 'https://pokeapi.co/api/v2'
@@ -117,3 +118,9 @@ export async function offlineFinderPokemon(): Promise<FinderPokemon[]> {
   const data = await loadOfflinePokedex()
   return data.finder
 }
+
+export async function offlineEvolutionChain(): Promise<import('../types/pokemon').EvolutionData | undefined> {
+  const data = await loadOfflinePokedex()
+  return data.evolution
+}
+

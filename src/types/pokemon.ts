@@ -72,6 +72,12 @@ export interface PokemonSpecies {
   id: number
   name: string
   flavor_text_entries: PokemonSpeciesFlavorTextEntry[]
+  evolution_chain?: NamedResource
+  generation?: NamedResource
+  varieties?: Array<{
+    is_default: boolean
+    pokemon: NamedResource
+  }>
 }
 
 export interface FinderStats {
@@ -107,3 +113,39 @@ export interface FinderPokemon {
   isBaby: boolean
   stats: FinderStats
 }
+
+export interface EvolutionDetail {
+  trigger: string | null
+  minLevel: number | null
+  item: string | null
+  heldItem: string | null
+  timeOfDay: string | null
+  minHappiness: number | null
+  location: string | null
+  knownMove: string | null
+  knownMoveType: string | null
+  needsOverworldRain: boolean
+  turnUpsideDown: boolean
+  relativePhysicalStats: number | null
+  partySpecies: string | null
+  partyType: string | null
+  tradeSpecies: string | null
+  gender: number | null
+}
+
+export interface EvolutionSpeciesNode {
+  species: NamedResource
+  details: EvolutionDetail[]
+  evolvesTo: EvolutionSpeciesNode[]
+}
+
+export interface EvolutionChain {
+  id: number
+  root: EvolutionSpeciesNode
+}
+
+export interface EvolutionData {
+  bySpecies: Record<string, number>
+  chains: Record<string, EvolutionChain>
+}
+

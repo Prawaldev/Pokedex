@@ -3,6 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import { ErrorBox, Loader } from '../components/Feedback'
 import { PokemonProfile } from '../components/PokemonProfile'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { EvolutionChainView } from '../components/EvolutionChain'
+import { ShinyFormViewer } from '../components/ShinyFormViewer'
+import { CryPlayer } from '../components/CryPlayer'
 import { usePokemonDetail } from '../hooks/usePokemonDetail'
 import { formatName } from '../lib/format'
 
@@ -54,7 +57,16 @@ function PokemonView({ name }: { name: string }) {
         <ErrorBox message={state.message} onRetry={retry} />
       )}
 
-      {state.status === 'ready' && <PokemonProfile pokemon={state.pokemon} />}
+      {state.status === 'ready' && (
+        <>
+          <PokemonProfile pokemon={state.pokemon} />
+          <div style={{ marginTop: '1.5rem', display: 'grid', gap: '1.5rem' }}>
+            <ShinyFormViewer pokemon={state.pokemon} />
+            <CryPlayer pokemon={state.pokemon} />
+            <EvolutionChainView pokemonName={state.pokemon.name} />
+          </div>
+        </>
+      )}
     </section>
   )
 }

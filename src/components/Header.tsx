@@ -51,6 +51,46 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
             <ChatIcon />
             <span>Finder</span>
           </Link>
+          <Link
+            to="/compare"
+            className="header-action"
+            aria-label="Compare Pokémon"
+            title="Compare two Pokémon"
+          >
+            <span>Compare</span>
+          </Link>
+          <Link
+            to="/types"
+            className="header-action"
+            aria-label="Type effectiveness calculator"
+            title="Type effectiveness calculator"
+          >
+            <span>Types</span>
+          </Link>
+          <Link
+            to="/team"
+            className="header-action"
+            aria-label="Team builder"
+            title="Team builder"
+          >
+            <span>Team</span>
+          </Link>
+          <Link
+            to="/tracker"
+            className="header-action"
+            aria-label="Collection tracker"
+            title="Collection tracker"
+          >
+            <span>Tracker</span>
+          </Link>
+          <Link
+            to="/quiz"
+            className="header-action"
+            aria-label="Pokémon quiz"
+            title="Pokémon quiz"
+          >
+            <span>Quiz</span>
+          </Link>
 
           <ColorPicker />
 
