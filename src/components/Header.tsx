@@ -68,14 +68,6 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
             <span>Types</span>
           </Link>
           <Link
-            to="/team"
-            className="header-action"
-            aria-label="Team builder"
-            title="Team builder"
-          >
-            <span>Team</span>
-          </Link>
-          <Link
             to="/tracker"
             className="header-action"
             aria-label="Collection tracker"

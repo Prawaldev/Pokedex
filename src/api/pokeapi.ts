@@ -176,13 +176,19 @@ export function fetchEvolutionDataCached(): Promise<EvolutionData> {
       if (!data) throw new Error('Evolution data not available')
       return data
     }
-    // Try to load from offline dataset structure if present in public data? Or use offline structure
-    // In online mode, better to construct from what we have - but easier to also check offline style
-    // Fallback: try loading evolution data similar to offline if bundled
+    // Try to load from offline dataset structure if present in public data
     const url = `${import.meta.env.BASE_URL}offline/pokedex.json`
     const resp = await fetch(url)
     if (!resp.ok) throw new Error('Evolution data not available')
-    const json = (await resp.json()) as { evolution?: EvolutionData }
+    const contentType = resp.headers.get('content-type') || ''
+    if (contentType.includes('text/html')) {
+      throw new Error('Evolution data not available')
+    }
+    const text = await resp.text()
+    if (text.trim().startsWith('<')) {
+      throw new Error('Evolution data not available')
+    }
+    const json = JSON.parse(text) as { evolution?: EvolutionData }
     if (!json.evolution) throw new Error('Evolution data not available')
     return json.evolution
   })().catch((error: unknown) => {

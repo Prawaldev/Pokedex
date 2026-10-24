@@ -1,4 +1,4 @@
-export type CollectionState = 'none' | 'seen' | 'caught' | 'shinycaught'
+export type CollectionState = 'none' | 'seen' | 'caught'
 
 export interface PokemonCollectionEntry {
   state: CollectionState
@@ -19,6 +19,7 @@ export function loadCollection(): CollectionData {
     if (!raw) return { entries: {} }
     const parsed = JSON.parse(raw) as CollectionData
     if (!parsed || typeof parsed !== 'object' || !parsed.entries) return { entries: {} }
+    // Ignore obsolete shiny-caught fields safely
     return parsed
   } catch {
     return { entries: {} }
@@ -44,15 +45,13 @@ export function setPokemonState(data: CollectionData, key: string, state: Collec
   newData.entries[key] = {
     state,
     seenAt: existing?.seenAt ?? now,
-    caughtAt: state === 'caught' || state === 'shinycaught' ? now : (existing?.caughtAt),
-    shinyCaughtAt: state === 'shinycaught' ? now : (existing?.shinyCaughtAt),
+    caughtAt: state === 'caught' ? now : existing?.caughtAt,
   }
   if (state === 'seen') {
     newData.entries[key].caughtAt = undefined
-    newData.entries[key].shinyCaughtAt = undefined
-  } else if (state === 'caught') {
-    newData.entries[key].shinyCaughtAt = undefined
   }
+  // Remove shiny caught tracking
+  delete (newData.entries[key] as any).shinyCaughtAt
   return newData
 }
 

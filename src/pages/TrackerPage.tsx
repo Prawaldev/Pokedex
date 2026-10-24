@@ -6,7 +6,7 @@ import { usePokemonIndex } from '../hooks/usePokemonIndex'
 import { formatName, formatNumber } from '../lib/format'
 import { loadCollection, saveCollection, setPokemonState, type CollectionState } from '../lib/collection'
 
-const STATES: CollectionState[] = ['none', 'seen', 'caught', 'shinycaught']
+const STATES: CollectionState[] = ['none', 'seen', 'caught']
 
 export function TrackerPage() {
   const { state } = usePokemonIndex()
@@ -30,24 +30,16 @@ export function TrackerPage() {
 
   const counts = useMemo(() => {
     const total = resources.length
-    let seen = 0, caught = 0, shiny = 0
-    for (const r of resources) {
-      const e = collection.entries[r.name]
-      if (e?.state === 'seen') seen++
-      if (e?.state === 'caught') caught++
-      if (e?.state === 'shinycaught') { shiny++; caught++ /* count as caught too? but rules say different; we track separately */ }
-    }
-    // better: count by state
-    seen = 0; caught = 0; shiny = 0
+    let seen = 0
+    let caught = 0
     for (const r of resources) {
       const e = collection.entries[r.name]
       if (!e) continue
       if (e.state === 'seen') seen++
       if (e.state === 'caught') caught++
-      if (e.state === 'shinycaught') shiny++
     }
-    const pct = (n: number) => total === 0 ? 0 : Math.round((n / total) * 100)
-    return { total, seen, caught, shiny, pctSeen: pct(seen), pctCaught: pct(caught), pctShiny: pct(shiny) }
+    const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100))
+    return { total, seen, caught, pctSeen: pct(seen), pctCaught: pct(caught) }
   }, [collection, resources])
 
   const filtered = useMemo(() => {
@@ -61,13 +53,12 @@ export function TrackerPage() {
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} resources={resources} />}
       <section className="panel">
         <h1 className="display" style={{ fontSize: '2rem', marginBottom: '1rem' }}>Pokédex Completion Tracker</h1>
-        <p className="prose-dim" style={{ marginBottom: '1.5rem' }}>Mark Pokémon as Seen, Caught, or Shiny Caught. Progress saved locally.</p>
+        <p className="prose-dim" style={{ marginBottom: '1.5rem' }}>Mark Pokémon as Seen or Caught. Progress saved locally.</p>
 
         <div className="panel-tight" style={{ marginBottom: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           <div><span className="label">Total</span><div>{counts.total}</div></div>
           <div><span className="label">Seen</span><div>{counts.seen} ({counts.pctSeen}%)</div></div>
           <div><span className="label">Caught</span><div>{counts.caught} ({counts.pctCaught}%)</div></div>
-          <div><span className="label">Shiny Caught</span><div>{counts.shiny} ({counts.pctShiny}%)</div></div>
         </div>
 
         <div className="panel-tight" style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -75,7 +66,6 @@ export function TrackerPage() {
             <option value="all">All</option>
             <option value="seen">Seen</option>
             <option value="caught">Caught</option>
-            <option value="shinycaught">Shiny Caught</option>
           </select>
           <button className="btn" onClick={reset}>Reset Progress</button>
         </div>
@@ -94,7 +84,7 @@ export function TrackerPage() {
                   </div>
                   <div style={{ marginTop: '0.5rem' }}>
                     <select className="btn" value={cur} onChange={(e) => update(r.name, e.target.value as CollectionState)}>
-                      {STATES.map((s) => <option key={s} value={s}>{s === 'none' ? 'None' : s === 'seen' ? 'Seen' : s === 'caught' ? 'Caught' : 'Shiny Caught'}</option>)}
+                      {STATES.map((s) => <option key={s} value={s}>{s === 'none' ? 'None' : s === 'seen' ? 'Seen' : s === 'caught' ? 'Caught' : s}</option>)}
                     </select>
                   </div>
                 </div>

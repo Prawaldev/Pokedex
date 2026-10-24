@@ -47,8 +47,8 @@ export function ComparePage() {
     setSearchParams(p)
   }
 
-  const detailA = usePokemonDetail(a)
-  const detailB = usePokemonDetail(b)
+  const detailA = usePokemonDetail(a || '')
+  const detailB = usePokemonDetail(b || '')
 
   const stats = useMemo(() => {
     const keys = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'] as const

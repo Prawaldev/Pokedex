@@ -25,8 +25,16 @@ export function usePokemonDetail(identifier: string | number) {
 
   useEffect(() => {
     let active = true
+    const id = String(identifier).trim()
+    if (!id) {
+      setState({ status: 'error', message: 'No Pokémon selected.', notFound: true })
+      return () => {
+        active = false
+      }
+    }
 
-    fetchPokemonCached(identifier)
+    setState({ status: 'loading' })
+    fetchPokemonCached(id)
       .then((pokemon) => {
         if (active) setState({ status: 'ready', pokemon })
       })

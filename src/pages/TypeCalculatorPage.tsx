@@ -17,7 +17,7 @@ export function TypeCalculatorPage() {
   const [t1, setT1] = useState<TypeName>('normal')
   const [t2, setT2] = useState<TypeName>('normal')
 
-  const detail = usePokemonDetail(selectedPokemon)
+  const detail = usePokemonDetail(selectedPokemon || '')
   const defending = useMemo<TypeName[]>(() => {
     if (mode === 'pokemon' && detail.state.status === 'ready') {
       return detail.state.pokemon.types.map((t) => t.type.name.toLowerCase() as TypeName)
