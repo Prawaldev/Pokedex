@@ -1,4 +1,5 @@
 import type {
+  EvolutionChain,
   FinderPokemon,
   NamedResource,
   Pokemon,
@@ -122,5 +123,40 @@ export async function offlineFinderPokemon(): Promise<FinderPokemon[]> {
 export async function offlineEvolutionChain(): Promise<import('../types/pokemon').EvolutionData | undefined> {
   const data = await loadOfflinePokedex()
   return data.evolution
+}
+
+/**
+ * Resolves a species' evolution chain from the bundled offline dataset. The
+ * dataset keys families by species id, not by name, so the species record is
+ * used to find the right chain.
+ */
+export async function offlineEvolutionForSpecies(
+  identifier: string | number,
+): Promise<EvolutionChain> {
+  const data = await loadOfflinePokedex()
+  const key = normalizeIdentifier(identifier)
+  const species = data.species.find(
+    (entry) => String(entry.id) === key || entry.name === key,
+  )
+
+  if (!species) {
+    throw new Error('No species record was found in the offline dataset.')
+  }
+  if (!species.evolution_chain) {
+    throw new Error('No evolution chain is recorded for this Pokémon.')
+  }
+
+  const evolution = data.evolution
+  if (!evolution) {
+    throw new Error('Evolution data is missing from the offline dataset.')
+  }
+
+  const chainId = evolution.bySpecies[String(species.id)]
+  const chain = chainId === undefined ? undefined : evolution.chains[String(chainId)]
+  if (!chain) {
+    throw new Error('Evolution data is missing from the offline dataset.')
+  }
+
+  return chain
 }
 

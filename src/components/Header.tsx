@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ColorPicker } from './ColorPicker'
 import { ChatIcon, GitHubIcon, SearchIcon } from './Icons'
 import { Logo } from './Logo'
+import { MobileNav } from './MobileNav'
 import { ThemeToggle } from './ThemeToggle'
 import { TypeFilter } from './TypeFilter'
 
@@ -53,7 +54,7 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
           </Link>
           <Link
             to="/compare"
-            className="header-action"
+            className="header-action header-nav-link"
             aria-label="Compare Pokémon"
             title="Compare two Pokémon"
           >
@@ -61,7 +62,7 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
           </Link>
           <Link
             to="/types"
-            className="header-action"
+            className="header-action header-nav-link"
             aria-label="Type effectiveness calculator"
             title="Type effectiveness calculator"
           >
@@ -69,7 +70,7 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
           </Link>
           <Link
             to="/tracker"
-            className="header-action"
+            className="header-action header-nav-link"
             aria-label="Collection tracker"
             title="Collection tracker"
           >
@@ -77,7 +78,7 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
           </Link>
           <Link
             to="/quiz"
-            className="header-action"
+            className="header-action header-nav-link"
             aria-label="Pokémon quiz"
             title="Pokémon quiz"
           >
@@ -87,12 +88,16 @@ export function Header({ selectedType, onTypeChange, onSearchOpen }: HeaderProps
           <ColorPicker />
 
           <ThemeToggle />
+
+          <MobileNav />
         </div>
       </div>
 
       <div className="header-lockup">
         <Logo className="header-logo" />
-        <h1 className="display header-title">Pokédex</h1>
+        <a href={import.meta.env.BASE_URL} className="display header-title header-title-link">
+          Pokédex
+        </a>
       </div>
 
       <p className="prose-dim header-subtitle">

@@ -72,7 +72,7 @@ export interface PokemonSpecies {
   id: number
   name: string
   flavor_text_entries: PokemonSpeciesFlavorTextEntry[]
-  evolution_chain?: NamedResource
+  evolution_chain?: NamedResource | null
   generation?: NamedResource
   varieties?: Array<{
     is_default: boolean
@@ -121,6 +121,8 @@ export interface EvolutionDetail {
   heldItem: string | null
   timeOfDay: string | null
   minHappiness: number | null
+  minAffection?: number | null
+  minBeauty?: number | null
   location: string | null
   knownMove: string | null
   knownMoveType: string | null
@@ -131,12 +133,14 @@ export interface EvolutionDetail {
   partyType: string | null
   tradeSpecies: string | null
   gender: number | null
+  needsMultiplayer?: boolean
 }
 
 export interface EvolutionSpeciesNode {
   species: NamedResource
   details: EvolutionDetail[]
   evolvesTo: EvolutionSpeciesNode[]
+  isBaby?: boolean
 }
 
 export interface EvolutionChain {
@@ -147,5 +151,41 @@ export interface EvolutionChain {
 export interface EvolutionData {
   bySpecies: Record<string, number>
   chains: Record<string, EvolutionChain>
+}
+
+/** Raw shape returned by PokéAPI's evolution-chain endpoint. */
+export interface EvolutionChainResource {
+  id: number
+  baby_trigger_item: NamedResource | null
+  chain: EvolutionSpeciesResource
+}
+
+export interface EvolutionSpeciesResource {
+  is_baby: boolean
+  species: NamedResource
+  evolution_details: EvolutionDetailResource[]
+  evolves_to: EvolutionSpeciesResource[]
+}
+
+export interface EvolutionDetailResource {
+  trigger: NamedResource | null
+  min_level: number | null
+  item: NamedResource | null
+  held_item: NamedResource | null
+  time_of_day: string
+  min_happiness: number | null
+  min_affection: number | null
+  min_beauty: number | null
+  location: NamedResource | null
+  known_move: NamedResource | null
+  known_move_type: NamedResource | null
+  needs_overworld_rain: boolean
+  turn_upside_down: boolean
+  relative_physical_stats: number | null
+  party_species: NamedResource | null
+  party_type: NamedResource | null
+  trade_species: NamedResource | null
+  gender: number | null
+  needs_multiplayer: boolean | null
 }
 

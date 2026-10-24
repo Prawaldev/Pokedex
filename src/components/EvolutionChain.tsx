@@ -1,97 +1,172 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ErrorBox, Loader } from '../components/Feedback'
-import { fetchEvolutionDataCached } from '../api/pokeapi'
+import { idFromResourceUrl } from '../api/pokeapi'
+import { useEvolutionChain } from '../hooks/useEvolutionChain'
 import { artworkUrlById, formatName } from '../lib/format'
-import type { EvolutionChain, EvolutionSpeciesNode } from '../types/pokemon'
+import type { EvolutionDetail, EvolutionSpeciesNode } from '../types/pokemon'
+import { ErrorBox, Loader } from './Feedback'
 
-function describeDetails(details: any[]) {
-  if (!details || details.length === 0) return []
-  const d = details[0]
+function describeDetail(detail: EvolutionDetail): string | null {
   const parts: string[] = []
-  if (d.trigger) parts.push(d.trigger.replace(/-/g, ' '))
-  if (d.minLevel) parts.push(`Level ${d.minLevel}`)
-  if (d.item) parts.push(`Use ${formatName(d.item)}`)
-  if (d.heldItem) parts.push(`Held ${formatName(d.heldItem)}`)
-  if (d.minHappiness) parts.push(`Happiness ${d.minHappiness}+`)
-  if (d.timeOfDay) parts.push(d.timeOfDay)
-  if (d.tradeSpecies) parts.push(`Trade for ${formatName(d.tradeSpecies)}`)
-  if (d.location) parts.push(`At ${formatName(d.location)}`)
-  if (d.needsOverworldRain) parts.push('Rain')
-  if (d.turnUpsideDown) parts.push('Upside down')
-  return parts
+
+  if (detail.trigger === 'level-up') {
+    parts.push(detail.minLevel === null ? 'Level up' : `Level ${detail.minLevel}`)
+  } else if (detail.trigger === 'use-item') {
+    parts.push(detail.item ? `Use ${formatName(detail.item)}` : 'Use item')
+  } else if (detail.trigger === 'trade') {
+    parts.push(
+      detail.tradeSpecies ? `Trade for ${formatName(detail.tradeSpecies)}` : 'Trade',
+    )
+  } else if (detail.trigger) {
+    parts.push(formatName(detail.trigger))
+  }
+
+  if (detail.trigger !== 'use-item' && detail.item) {
+    parts.push(`Use ${formatName(detail.item)}`)
+  }
+  if (detail.heldItem) parts.push(`Held ${formatName(detail.heldItem)}`)
+  if (detail.timeOfDay) parts.push(`During ${detail.timeOfDay}`)
+  if (detail.minHappiness !== null) parts.push(`Happiness ${detail.minHappiness}+`)
+  if (detail.minAffection) parts.push(`Affection ${detail.minAffection}+`)
+  if (detail.minBeauty) parts.push(`Beauty ${detail.minBeauty}+`)
+  if (detail.location) parts.push(`At ${formatName(detail.location)}`)
+  if (detail.knownMove) parts.push(`Knows ${formatName(detail.knownMove)}`)
+  if (detail.knownMoveType) {
+    parts.push(`Knows a ${formatName(detail.knownMoveType)}-type move`)
+  }
+  if (detail.needsOverworldRain) parts.push('During rain')
+  if (detail.turnUpsideDown) parts.push('While upside down')
+  if (detail.relativePhysicalStats !== null) {
+    const comparison = {
+      '-1': 'Attack < Defense',
+      '0': 'Attack = Defense',
+      '1': 'Attack > Defense',
+    }[String(detail.relativePhysicalStats)]
+    if (comparison) parts.push(comparison)
+  }
+  if (detail.partySpecies) parts.push(`With ${formatName(detail.partySpecies)} in party`)
+  if (detail.partyType) parts.push(`With a ${formatName(detail.partyType)}-type in party`)
+  if (detail.gender === 1) parts.push('Female')
+  if (detail.gender === 2) parts.push('Male')
+  if (detail.gender === 3) parts.push('Genderless')
+  if (detail.needsMultiplayer) parts.push('Needs multiplayer')
+
+  return parts.length > 0 ? parts.join(' • ') : null
+}
+
+function EvolutionNode({
+  node,
+  currentName,
+}: {
+  node: EvolutionSpeciesNode
+  currentName: string
+}) {
+  const name = node.species.name
+  const id = idFromResourceUrl(node.species.url)
+  const isCurrent = name === currentName.trim().toLowerCase()
+  const image = id > 0 ? artworkUrlById(id) : null
+
+  return (
+    <li className="evolution-node">
+      <Link
+        to={`/pokemon/${name}`}
+        className={`evolution-card${isCurrent ? ' is-current' : ''}`}
+        aria-current={isCurrent ? 'page' : undefined}
+      >
+        <span className="pokemon-art evolution-art">
+          {image ? (
+            <img
+              src={image}
+              alt={`${formatName(name)} artwork`}
+              width={120}
+              height={120}
+              loading="lazy"
+              className="pokemon-image"
+            />
+          ) : (
+            <span className="pokemon-art-fallback" aria-hidden="true">
+              ×
+            </span>
+          )}
+        </span>
+        <span className="pokemon-name">{formatName(name)}</span>
+        {node.isBaby && <span className="evolution-tag">Baby</span>}
+      </Link>
+
+      {node.evolvesTo.length > 0 && (
+        <ul className="evolution-branches">
+          {node.evolvesTo.map((child, childIndex) => {
+            const conditions = [
+              ...new Set(
+                child.details
+                  .map(describeDetail)
+                  .filter((condition): condition is string => condition !== null),
+              ),
+            ]
+
+            return (
+              <li
+                className="evolution-branch"
+                key={`${child.species.name}-${childIndex}`}
+              >
+                <div className="evolution-path">
+                  <span className="evolution-arrow" aria-hidden="true">
+                    →
+                  </span>
+                  <span className="evolution-conditions">
+                    {conditions.length > 0 ? (
+                      conditions.map((condition, index) => (
+                        <span
+                          className="evolution-condition"
+                          key={`${condition}-${index}`}
+                        >
+                          {condition}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="evolution-condition">Special condition</span>
+                    )}
+                  </span>
+                </div>
+                <ul className="evolution-child-list">
+                  <EvolutionNode node={child} currentName={currentName} />
+                </ul>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </li>
+  )
 }
 
 export function EvolutionChainView({ pokemonName }: { pokemonName: string }) {
-  const [state, setState] = useState<{ status: 'loading' } | { status: 'ready'; chain: EvolutionChain | null } | { status: 'error'; message: string }>({ status: 'loading' })
-
-  useEffect(() => {
-    let active = true
-    fetchEvolutionDataCached()
-      .then((data) => {
-        if (!active) return
-        const chainId = data.bySpecies[pokemonName]
-        if (!chainId) {
-          setState({ status: 'ready', chain: null })
-          return
-        }
-        const chain = data.chains[String(chainId)]
-        if (!chain) {
-          setState({ status: 'ready', chain: null })
-          return
-        }
-        setState({ status: 'ready', chain })
-      })
-      .catch((err) => {
-        if (active) setState({ status: 'error', message: err instanceof Error ? err.message : 'Failed to load evolution data' })
-      })
-    return () => { active = false }
-  }, [pokemonName])
-
-  if (state.status === 'loading') return <Loader label="Loading evolution" />
-  if (state.status === 'error') return <ErrorBox message={state.message} onRetry={() => { window.location.reload() }} />
-  if (state.status === 'ready' && !state.chain) return <p className="meta">No evolution data available.</p>
-
-  const chain = state.status === 'ready' && state.chain ? state.chain : null
-  if (!chain) return null
-
-  const renderNode = (node: EvolutionSpeciesNode, depth: number = 0) => {
-    const details = describeDetails(node.details)
-    return (
-      <div key={node.species.name} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <Link to={`/pokemon/${node.species.name}`} className="pokemon-card" style={{ width: '200px' }}>
-            <span className="pokemon-art">
-              <img src={artworkUrlById(parseInt(node.species.url.match(/\/(\d+)\/?$/)?.[1] || '0'))} alt="" width={120} height={120} loading="lazy" className="pokemon-image" />
-            </span>
-            <span className="pokemon-name">{formatName(node.species.name)}</span>
-          </Link>
-          {node.evolvesTo.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {node.evolvesTo.map((child) => (
-                <div key={child.species.name} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <div style={{ padding: '0.3rem 0.6rem', backgroundColor: 'var(--surface-sunken)', color: 'var(--ink-dim)' }}>
-                    {details.length > 0 ? details.join(' • ') : child.details.length > 0 ? 'Special condition' : '→'}
-                  </div>
-                  {renderNode(child, depth + 1)}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  }
+  const { state, retry } = useEvolutionChain(pokemonName)
 
   return (
     <section className="detail-section">
       <h2 className="label">Evolution Chain</h2>
-      <div className="panel-tight" style={{ marginTop: '0.75rem' }}>
-        {renderNode(chain.root)}
-        {chain.root.evolvesTo.length > 1 && (
-          <p className="meta" style={{ marginTop: '0.75rem' }}>Branching evolution family.</p>
-        )}
-      </div>
+
+      {state.status === 'loading' && <Loader label="Loading evolution" />}
+
+      {state.status === 'error' && (
+        <ErrorBox message={state.message} onRetry={retry} />
+      )}
+
+      {state.status === 'ready' && (
+        <div className="panel-tight evolution-panel">
+          <ul className="evolution-tree">
+            <EvolutionNode node={state.chain.root} currentName={pokemonName} />
+          </ul>
+
+          {state.chain.root.evolvesTo.length === 0 && (
+            <p className="meta evolution-note">This Pokémon does not evolve.</p>
+          )}
+
+          {state.chain.root.evolvesTo.length > 1 && (
+            <p className="meta evolution-note">Branching evolution family.</p>
+          )}
+        </div>
+      )}
     </section>
   )
 }

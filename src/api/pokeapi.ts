@@ -1,5 +1,10 @@
 import type {
-  EvolutionData,
+  EvolutionChain,
+  EvolutionChainResource,
+  EvolutionDetail,
+  EvolutionDetailResource,
+  EvolutionSpeciesNode,
+  EvolutionSpeciesResource,
   NamedResource,
   Pokemon,
   PokemonListResponse,
@@ -8,7 +13,7 @@ import type {
 } from '../types/pokemon'
 import {
   isOfflineMode,
-  offlineEvolutionChain,
+  offlineEvolutionForSpecies,
   offlinePokemon,
   offlinePokemonIndex,
   offlinePokemonType,
@@ -163,40 +168,111 @@ export function fetchPokemonSpeciesCached(
   return promise
 }
 
-const evolutionCache = new Map<string, Promise<EvolutionData>>()
+function normalizeEvolutionDetail(detail: EvolutionDetailResource): EvolutionDetail {
+  if (!detail || typeof detail !== 'object') {
+    throw new Error('The evolution chain contained an invalid condition.')
+  }
 
-export function fetchEvolutionDataCached(): Promise<EvolutionData> {
-  const key = 'evolution'
-  const cached = evolutionCache.get(key)
+  return {
+    trigger: detail.trigger?.name ?? null,
+    minLevel: detail.min_level ?? null,
+    item: detail.item?.name ?? null,
+    heldItem: detail.held_item?.name ?? null,
+    timeOfDay: detail.time_of_day || null,
+    minHappiness: detail.min_happiness ?? null,
+    minAffection: detail.min_affection ?? null,
+    minBeauty: detail.min_beauty ?? null,
+    location: detail.location?.name ?? null,
+    knownMove: detail.known_move?.name ?? null,
+    knownMoveType: detail.known_move_type?.name ?? null,
+    needsOverworldRain: Boolean(detail.needs_overworld_rain),
+    turnUpsideDown: Boolean(detail.turn_upside_down),
+    relativePhysicalStats: detail.relative_physical_stats ?? null,
+    partySpecies: detail.party_species?.name ?? null,
+    partyType: detail.party_type?.name ?? null,
+    tradeSpecies: detail.trade_species?.name ?? null,
+    gender: detail.gender ?? null,
+    needsMultiplayer: detail.needs_multiplayer ?? undefined,
+  }
+}
+
+function normalizeEvolutionNode(node: EvolutionSpeciesResource): EvolutionSpeciesNode {
+  if (
+    !node ||
+    typeof node !== 'object' ||
+    !node.species ||
+    typeof node.species.name !== 'string' ||
+    typeof node.species.url !== 'string'
+  ) {
+    throw new Error('The evolution chain response was missing a species entry.')
+  }
+
+  return {
+    species: { name: node.species.name, url: node.species.url },
+    details: Array.isArray(node.evolution_details)
+      ? node.evolution_details.map(normalizeEvolutionDetail)
+      : [],
+    evolvesTo: Array.isArray(node.evolves_to)
+      ? node.evolves_to.map(normalizeEvolutionNode)
+      : [],
+    isBaby: Boolean(node.is_baby),
+  }
+}
+
+async function fetchEvolutionChain(url: string): Promise<EvolutionChain> {
+  const data = await request<EvolutionChainResource>(url)
+  if (
+    !data ||
+    typeof data !== 'object' ||
+    typeof data.id !== 'number' ||
+    !data.chain ||
+    typeof data.chain !== 'object'
+  ) {
+    throw new Error('The evolution chain response was incomplete.')
+  }
+
+  return { id: data.id, root: normalizeEvolutionNode(data.chain) }
+}
+
+/* Evolution chains are keyed by their own URL rather than by Pokémon id —
+   several species share a family, so one chain is fetched once for all of
+   them. Failures are evicted so retry can reach the network again. */
+const evolutionChainCache = new Map<string, Promise<EvolutionChain>>()
+
+export function fetchEvolutionChainCached(url: string): Promise<EvolutionChain> {
+  const key = url.trim()
+  if (!key) {
+    return Promise.reject(new Error('No evolution chain URL was provided.'))
+  }
+
+  const cached = evolutionChainCache.get(key)
   if (cached) return cached
 
-  const promise = (async () => {
-    if (OFFLINE) {
-      const data = await offlineEvolutionChain()
-      if (!data) throw new Error('Evolution data not available')
-      return data
-    }
-    // Try to load from offline dataset structure if present in public data
-    const url = `${import.meta.env.BASE_URL}offline/pokedex.json`
-    const resp = await fetch(url)
-    if (!resp.ok) throw new Error('Evolution data not available')
-    const contentType = resp.headers.get('content-type') || ''
-    if (contentType.includes('text/html')) {
-      throw new Error('Evolution data not available')
-    }
-    const text = await resp.text()
-    if (text.trim().startsWith('<')) {
-      throw new Error('Evolution data not available')
-    }
-    const json = JSON.parse(text) as { evolution?: EvolutionData }
-    if (!json.evolution) throw new Error('Evolution data not available')
-    return json.evolution
-  })().catch((error: unknown) => {
-    evolutionCache.delete(key)
+  const promise = fetchEvolutionChain(key).catch((error: unknown) => {
+    evolutionChainCache.delete(key)
     throw error
   })
 
-  evolutionCache.set(key, promise)
+  evolutionChainCache.set(key, promise)
   return promise
+}
+
+/**
+ * Follows the same path as the API: species record first, then the
+ * evolution-chain URL it points at. Offline builds resolve the family from the
+ * bundled dataset instead.
+ */
+export async function fetchEvolutionChainForSpecies(
+  identifier: string | number,
+): Promise<EvolutionChain> {
+  if (OFFLINE) return offlineEvolutionForSpecies(identifier)
+
+  const species = await fetchPokemonSpeciesCached(identifier)
+  const url = species.evolution_chain?.url
+  if (!url) {
+    throw new Error('No evolution chain is recorded for this Pokémon.')
+  }
+
+  return fetchEvolutionChainCached(url)
 }
 

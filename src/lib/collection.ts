@@ -1,28 +1,45 @@
-export type CollectionState = 'none' | 'seen' | 'caught'
-
 export interface PokemonCollectionEntry {
-  state: CollectionState
-  seenAt?: number
-  caughtAt?: number
-  shinyCaughtAt?: number
+  seenAt: number
 }
 
 export interface CollectionData {
-  entries: Record<string, PokemonCollectionEntry> // keyed by pokemon name/id
+  entries: Record<string, PokemonCollectionEntry> // keyed by pokemon name
 }
 
 const COLLECTION_KEY = 'pokedex-collection'
 
+function emptyCollection(): CollectionData {
+  return { entries: {} }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+/**
+ * Reads the locally stored list of Pokémon the reader has opened. Older
+ * entries used a `seen` / `caught` state; any stored entry now counts as seen
+ * so existing progress survives while caught tracking is removed.
+ */
 export function loadCollection(): CollectionData {
   try {
     const raw = localStorage.getItem(COLLECTION_KEY)
-    if (!raw) return { entries: {} }
-    const parsed = JSON.parse(raw) as CollectionData
-    if (!parsed || typeof parsed !== 'object' || !parsed.entries) return { entries: {} }
-    // Ignore obsolete shiny-caught fields safely
-    return parsed
+    if (!raw) return emptyCollection()
+
+    const parsed: unknown = JSON.parse(raw)
+    if (!isRecord(parsed) || !isRecord(parsed.entries)) return emptyCollection()
+
+    const entries: Record<string, PokemonCollectionEntry> = {}
+    for (const [key, value] of Object.entries(parsed.entries)) {
+      if (!isRecord(value)) continue
+      entries[key] = {
+        seenAt: typeof value.seenAt === 'number' ? value.seenAt : Date.now(),
+      }
+    }
+
+    return { entries }
   } catch {
-    return { entries: {} }
+    return emptyCollection()
   }
 }
 
@@ -34,24 +51,14 @@ export function saveCollection(data: CollectionData) {
   }
 }
 
-export function setPokemonState(data: CollectionData, key: string, state: CollectionState): CollectionData {
-  const newData = { ...data, entries: { ...data.entries } }
-  if (state === 'none') {
-    delete newData.entries[key]
-    return newData
-  }
-  const existing = newData.entries[key]
-  const now = Date.now()
-  newData.entries[key] = {
-    state,
-    seenAt: existing?.seenAt ?? now,
-    caughtAt: state === 'caught' ? now : existing?.caughtAt,
-  }
-  if (state === 'seen') {
-    newData.entries[key].caughtAt = undefined
-  }
-  // Remove shiny caught tracking
-  delete (newData.entries[key] as any).shinyCaughtAt
-  return newData
-}
+/** Adds a Pokémon to the seen list, leaving an existing timestamp alone. */
+export function markPokemonSeen(data: CollectionData, key: string): CollectionData {
+  if (data.entries[key]) return data
 
+  return {
+    entries: {
+      ...data.entries,
+      [key]: { seenAt: Date.now() },
+    },
+  }
+}
