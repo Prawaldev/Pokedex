@@ -126,7 +126,7 @@ export function QuizPage() {
               <p className="meta" style={{ marginBottom: '1rem' }}>Identify from Pokédex number</p>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', maxWidth: '400px', margin: '0 auto' }}>
+            <div className="quiz-options">
               {options.map((opt) => (
                 <button
                   key={opt}

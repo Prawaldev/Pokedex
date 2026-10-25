@@ -43,7 +43,7 @@ export function TypeCalculatorPage() {
         <p className="prose-dim" style={{ marginBottom: '1.5rem' }}>Calculate weaknesses, resistances, and immunities using standard type matchups.</p>
 
         <div className="panel-tight" style={{ marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <div className="type-mode-switch">
             <button className="btn" onClick={() => setMode('pokemon')}>Select Pokémon</button>
             <button className="btn" onClick={() => setMode('types')}>Select Types</button>
           </div>
@@ -67,7 +67,7 @@ export function TypeCalculatorPage() {
             </div>
           )}
           {mode === 'types' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="type-select-grid">
               <div>
                 <label className="label">Type 1</label>
                 <select className="btn" value={t1} onChange={(e) => setT1(e.target.value as TypeName)} style={{ marginTop: '0.5rem', width: '100%' }}>
@@ -92,7 +92,7 @@ export function TypeCalculatorPage() {
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+        <div className="matchup-grid">
           <div className="panel-tight">
             <h3 className="label" style={{ marginBottom: '0.75rem', color: 'var(--amber)' }}>Weaknesses (super effective)</h3>
             {matchups.weaknesses.length === 0 ? <p className="meta">None</p> : (
@@ -136,7 +136,7 @@ export function TypeCalculatorPage() {
 
         <div className="panel-tight" style={{ marginTop: '1.5rem' }}>
           <h3 className="label" style={{ marginBottom: '0.75rem' }}>All attacking types</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem' }}>
+          <div className="all-types-grid">
             {ALL_TYPES.map((att) => {
               const mult = defending.length > 0 ? getEffectiveness(att, defending) : 1
               return (

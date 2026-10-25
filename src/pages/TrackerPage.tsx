@@ -50,15 +50,7 @@ export function TrackerPage() {
           Pokémon you’ve viewed appear here with their artwork.
         </p>
 
-        <div
-          className="panel-tight"
-          style={{
-            marginBottom: '1.5rem',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="panel-tight tracker-stats">
           <div>
             <span className="label">Total</span>
             <div>{counts.total}</div>
@@ -86,7 +78,7 @@ export function TrackerPage() {
         {seenResources.length === 0 ? (
           <p className="empty">No Pokémon seen yet. Open a Pokémon page to add it to this list.</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.75rem' }}>
+          <div className="tracker-grid">
             {seenResources.map((resource) => {
               const id = idFromResourceUrl(resource.url)
               const image = artworkUrlById(id)

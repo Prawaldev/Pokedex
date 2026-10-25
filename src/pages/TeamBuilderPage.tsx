@@ -104,7 +104,7 @@ export function TeamBuilderPage() {
           {shareUrl && <button className="btn" onClick={() => { navigator.clipboard.writeText(shareUrl); alert('Copied share URL'); }}>Share Team</button>}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className="team-slots">
           {activeTeam.slots.map((slot, idx) => (
             <div key={idx} className="panel-tight">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>

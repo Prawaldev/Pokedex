@@ -75,24 +75,24 @@ export function ComparePage() {
     const p = det.state.pokemon
     const img = artworkUrl(p)
     return (
-      <div className="panel-tight">
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div className="detail-art" style={{ width: '120px', height: '120px' }}>
+      <div className="panel-tight compare-card">
+        <div className="compare-card-head">
+          <div className="detail-art compare-art">
             {img ? <img src={img} alt={formatName(p.name)} className="detail-image" /> : <span className="pokemon-art-fallback">×</span>}
           </div>
-          <div>
+          <div className="compare-card-body">
             <p className="meta">{formatNumber(p.id)}</p>
-            <h2 className="display" style={{ fontSize: '1.5rem' }}>{formatName(p.name)}</h2>
-            <div className="type-list" style={{ marginTop: '0.5rem' }}>
+            <h2 className="display compare-card-title">{formatName(p.name)}</h2>
+            <div className="type-list compare-card-types">
               {p.types.map((t) => <TypeBadge key={t.slot} type={formatName(t.type.name)} />)}
             </div>
           </div>
         </div>
-        <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+        <div className="compare-measurements">
           <div><span className="label">Height</span><div>{formatHeight(p.height)}</div></div>
           <div><span className="label">Weight</span><div>{formatWeight(p.weight)}</div></div>
         </div>
-        <section style={{ marginTop: '1rem' }}>
+        <section className="compare-abilities">
           <h3 className="label">Abilities</h3>
           <ul className="ability-list">
             {p.abilities.map((ab) => (
@@ -114,34 +114,34 @@ export function ComparePage() {
         {state.status === 'loading' && <Loader label="Loading index" />}
         {state.status === 'ready' && (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div className="compare-selectors">
               <PokemonSelect resources={resources} value={a} onChange={setA} label="Pokémon 1" />
               <PokemonSelect resources={resources} value={b} onChange={setB} label="Pokémon 2" />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="compare-cards">
               {renderCard(detailA, a)}
               {renderCard(detailB, b)}
             </div>
             {detailA.state.status === 'ready' && detailB.state.status === 'ready' && (
               <div className="panel-tight" style={{ marginTop: '1.5rem' }}>
                 <h2 className="label" style={{ marginBottom: '1rem' }}>Base Stats Comparison</h2>
-                <div style={{ display: 'grid', gap: '0.75rem' }}>
+                <div className="compare-stats">
                   {stats.map((s) => {
                     const higherA = s.va > s.vb
                     const higherB = s.vb > s.va
                     const diff = Math.abs(s.va - s.vb)
                     return (
-                      <div key={s.key} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: '1rem', alignItems: 'center' }}>
-                        <div style={{ textAlign: 'right', color: higherA ? 'var(--amber)' : 'var(--ink)' }}>{s.va}{higherA && ` (+${diff})`}</div>
-                        <div style={{ textAlign: 'center' }}><span className="label">{s.label}</span></div>
-                        <div style={{ textAlign: 'left', color: higherB ? 'var(--amber)' : 'var(--ink)' }}>{s.vb}{higherB && ` (+${diff})`}</div>
+                      <div key={s.key} className="compare-stat-row">
+                        <div className="compare-stat-value is-left" style={{ color: higherA ? 'var(--amber)' : 'var(--ink)' }}>{s.va}{higherA && ` (+${diff})`}</div>
+                        <div className="compare-stat-label"><span className="label">{s.label}</span></div>
+                        <div className="compare-stat-value is-right" style={{ color: higherB ? 'var(--amber)' : 'var(--ink)' }}>{s.vb}{higherB && ` (+${diff})`}</div>
                       </div>
                     )
                   })}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: '1rem', alignItems: 'center', borderTop: '1px solid var(--line)', paddingTop: '0.75rem' }}>
-                    <div style={{ textAlign: 'right', color: totalA > totalB ? 'var(--amber)' : 'var(--ink)' }}>{totalA}{totalA > totalB && ` (+${totalA - totalB})`}</div>
-                    <div style={{ textAlign: 'center' }}><span className="label">Total</span></div>
-                    <div style={{ textAlign: 'left', color: totalB > totalA ? 'var(--amber)' : 'var(--ink)' }}>{totalB}{totalB > totalA && ` (+${totalB - totalA})`}</div>
+                  <div className="compare-stat-row is-total">
+                    <div className="compare-stat-value is-left" style={{ color: totalA > totalB ? 'var(--amber)' : 'var(--ink)' }}>{totalA}{totalA > totalB && ` (+${totalA - totalB})`}</div>
+                    <div className="compare-stat-label"><span className="label">Total</span></div>
+                    <div className="compare-stat-value is-right" style={{ color: totalB > totalA ? 'var(--amber)' : 'var(--ink)' }}>{totalB}{totalB > totalA && ` (+${totalB - totalA})`}</div>
                   </div>
                 </div>
                 <p className="meta" style={{ marginTop: '1rem' }}>No absolute winner declared by total alone — comparison is objective.</p>
