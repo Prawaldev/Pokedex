@@ -1,4 +1,4 @@
- <div align="center">
+= <div align="center">
 
 <img src="public/pokedex-favicon/web-app-manifest-512x512.png" alt="Pokédex icon" width="160" />
 
@@ -6,7 +6,9 @@
 
 ### A little place to explore Pokémon.
 
-[**Open Website**](https://prawaldev.github.io/Pokedex) · [**Download Android APK**](https://github.com/Prawaldev/Pokedex/releases/latest) · [**View Releases**](https://github.com/Prawaldev/Pokedex/releases)
+[![Website](https://img.shields.io/badge/Website-Visit-2D6A4F?style=flat-square)](https://prawaldev.github.io/Pokedex)
+[![Android APK](https://img.shields.io/badge/Android-Download-3975A8?style=flat-square)](https://github.com/Prawaldev/Pokedex/releases/latest)
+[![Releases](https://img.shields.io/badge/Releases-View-6B5B95?style=flat-square)](https://github.com/Prawaldev/Pokedex/releases)
 
 </div>
 
@@ -26,12 +28,12 @@ Available as a website and an Android app.
 |:---:|:---|
 | **Web** | [Launch Pokédex](https://prawaldev.github.io/Pokedex) |
 | **Android** | [Download the latest APK](https://github.com/Prawaldev/Pokedex/releases/latest) |
+| **Releases** | [View all releases](https://github.com/Prawaldev/Pokedex/releases) |
 
 </div>
 
-**Android installation:** Download the APK from the latest release, open it on your Android device, and allow installation from that source if prompted.
-
-> Note: Android installation may require allowing apps from your browser or file manager. The APK is distributed through GitHub Releases, not the Google Play Store.
+> [!IMPORTANT]
+> Android installation may require allowing apps from your browser or file manager. The APK is distributed through GitHub Releases, not the Google Play Store.
 
 ---
 
@@ -56,21 +58,21 @@ Available as a website and an Android app.
 
 ## Features
 
-<img src="public/feature/dark.png" alt="Feature — dark theme" width="30%" />
-<img src="public/feature/light.png" alt="Feature — light theme" width="30%" />
-<img src="public/feature/1.png" alt="Feature — search results" width="30%" />
-<img src="public/feature/quiz.png" alt="Feature — search results" width="30%" />
+<img src="public/feature/dark.png" alt="Dark theme" width="30%" />
+<img src="public/feature/light.png" alt="Light theme" width="30%" />
+<img src="public/feature/1.png" alt="Search results" width="30%" />
+<img src="public/feature/quiz.png" alt="Pokémon quiz" width="30%" />
 
 </div>
 
-<div align="center>
+---
 
-  ## License
+## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-Pokémon-related names, characters, artwork, and data belong to their respective owners and are not covered by this project's MIT License.
-</div>
+> [!NOTE]
+> This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+>
+> Pokémon-related names, characters, artwork, and data belong to their respective owners and are not covered by this project's MIT License.
 
 ---
 
