@@ -63,6 +63,15 @@ Available as a website and an Android app.
 
 </div>
 
+<div align="center>
+
+  ## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+Pokémon-related names, characters, artwork, and data belong to their respective owners and are not covered by this project's MIT License.
+</div>
+
 ---
 
 <div align="center">
